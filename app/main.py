@@ -1,13 +1,14 @@
+from typing import Any
 from fastapi import FastAPI
 from scalar_fastapi import get_scalar_api_reference
 app = FastAPI()
 
 @app.get("/shipment/{id}")
-def get_shipment(id : int) -> dict[str, str | int]:
+def get_shipment(id : int) -> dict[str, Any]:
     return {
             "id" : id,
             "content" : "wooden table",
-            "weight" : 100,
+            "weight" : 10.78,
             "destination" : "New York"
             }
 
