@@ -78,10 +78,8 @@ def create_shipment(weight : float, destination : str, data : dict[str, Any]) ->
     }
 
 @app.get("/shipments/{field}")
-def get_shipments_fields(field : str, id : int) -> dict[str, Any]:
-    return {
-        field : shipments[id][field]
-    }
+def get_shipments_fields(field : str, id : int) -> Any:
+    return shipments[id][field]
 
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
