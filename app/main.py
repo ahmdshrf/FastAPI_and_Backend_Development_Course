@@ -57,11 +57,9 @@ def get_shipment(id : int | None = None) -> dict[str, Any]:
     return shipments[id]
 
 @app.post("/shipment")
-def create_shipment(data : dict[str, Any]) -> dict[str, Any]:
+def create_shipment(weight : float, destination : str, data : dict[str, Any]) -> dict[str, Any]:
     new_id = max(shipments.keys()) + 1
     content = data["content"]
-    weight = data["weight"]
-    destination = data["destination"]
 
     if weight <= 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
