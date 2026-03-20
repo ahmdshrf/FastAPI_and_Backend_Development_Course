@@ -54,16 +54,43 @@ Open `http://127.0.0.1:8000` in your browser.
 ## API Endpoints
 
 - `GET /shipment`
-  - Returns a sample shipment object.
+  - Returns the latest shipment or a specific shipment by ID.
+  - Query param: `id` (optional, int)
 
-### Example response
+- `GET /shipment/latest`
+  - Returns the most recent shipment.
 
+- `POST /shipment`
+  - Creates a new shipment.
+  - Query params: `weight` (float), `destination` (str)
+  - Body: `{"content": "string"}`
+
+- `GET /shipments/{field}`
+  - Returns a specific field from a shipment.
+  - Path param: `field` (str, e.g., "content", "weight", "destination")
+  - Query param: `id` (int)
+
+### Example responses
+
+**GET /shipment** (latest):
 ```json
 {
-  "content": "wooden table",
-  "weight": 100,
-  "destination": "New York"
+  "content": "sofa",
+  "weight": 4.1,
+  "destination": "Vienna"
 }
+```
+
+**POST /shipment** (response):
+```json
+{
+  "id": 12085
+}
+```
+
+**GET /shipments/content?id=12078**:
+```
+"table"
 ```
 
 ## API Documentation
