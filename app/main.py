@@ -2,9 +2,11 @@ from fastapi import FastAPI
 from scalar_fastapi import get_scalar_api_reference
 app = FastAPI()
 
-@app.get("/shipment")
-def get_shipment():
-    return {"content" : "wooden table",
+@app.get("/shipment/{id}")
+def get_shipment(id : int) -> dict[str, str | int]:
+    return {
+            "id" : id,
+            "content" : "wooden table",
             "weight" : 100,
             "destination" : "New York"
             }
