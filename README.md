@@ -2,70 +2,62 @@
 
 This repository contains code and examples from the O'Reilly course **Ultimate Guide to FastAPI and Backend Development**.
 
-**Course Link:** [https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/](https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/)
-
-**Status:** In Progress
+- **Course Link:** [https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/](https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/)
+- **Status:** In Progress
+- **Python:** 3.7+
+- **Framework:** FastAPI
 
 ## Project Overview
 
-This project demonstrates building backend APIs using FastAPI, a modern, fast web framework for building APIs with Python 3.7+ based on standard Python type hints.
+A hands-on learning project for FastAPI and backend development. The app includes a simple API endpoint to practice route creation, request/response schemas, and interactive documentation.
 
 ## Features
 
-- Basic FastAPI application setup
-- RESTful API endpoints
-- JSON response handling
+- FastAPI app scaffold
+- JSON-based REST endpoint
+- FastAPI dev server with auto-reload
+- Swagger UI and ReDoc docs
 
 ## Prerequisites
 
 - Python 3.7 or higher
-- pip (Python package installer)
+- `pip` (Python package installer)
 
 ## Installation
 
-1. Clone the repository:
+1. Clone repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/<your-account>/FastAPI_and_Backend_Development_Course.git
    cd FastAPI_and_Backend_Development_Course
    ```
 
-2. Create a virtual environment:
+2. Create and activate virtual environment:
    ```bash
    python -m venv venv
+   .\venv\Scripts\activate   # Windows
+   source venv/bin/activate    # macOS/Linux
    ```
 
-3. Activate the virtual environment:
-   - On Windows:
-     ```bash
-     .\venv\Scripts\activate
-     ```
-   - On macOS/Linux:
-     ```bash
-     source venv/bin/activate
-     ```
-
-4. Install dependencies:
+3. Install dependencies:
    ```bash
-   pip install fastapi uvicorn
+   pip install fastapi
    ```
 
-## Running the Application
-
-Start the FastAPI server using Uvicorn:
+## Run the Application
 
 ```bash
-uvicorn app.main:app --reload
+fastapi dev
 ```
 
-The API will be available at `http://127.0.0.1:8000`
+Open `http://127.0.0.1:8000` in your browser.
 
 ## API Endpoints
 
-### GET /shipment
+- `GET /shipment`
+  - Returns a sample shipment object.
 
-Returns shipment details.
+### Example response
 
-**Response:**
 ```json
 {
   "content": "wooden table",
@@ -74,22 +66,31 @@ Returns shipment details.
 }
 ```
 
-## Interactive API Documentation
+## API Documentation
 
-Once the server is running, visit `http://127.0.0.1:8000/docs` for the interactive Swagger UI documentation.
+- Swagger: `http://127.0.0.1:8000/docs`
+- ReDoc: `http://127.0.0.1:8000/redoc`
 
 ## Project Structure
 
 ```
 app/
 ├── __init__.py
-└── main.py          # Main FastAPI application
+└── main.py       # main FastAPI app implementation
 ```
+
+## Development Notes
+
+- Update `app/main.py` to add new endpoints and route logic.
+- Use `pydantic` models in future enhancements for request/response validation.
 
 ## Contributing
 
-This is a learning project for the O'Reilly course. Feel free to explore and modify the code as you follow along with the course content.
+1. Fork the repository
+2. Create branch `feature/<name>`
+3. Add or update endpoints and tests
+4. Open Pull Request
 
 ## License
 
-This project is for educational purposes as part of the O'Reilly course.
+Educational use only for O'Reilly course practice.
