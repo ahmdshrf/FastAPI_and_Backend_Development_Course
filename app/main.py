@@ -166,6 +166,15 @@ def patch_shipment(
     #     shipments[id]["shipment_status"] = shipment_status
     return shipments[id]
 
+@app.delete("/shipment")
+def delete_shipment(id: int) -> dict[str, Any]:
+    if id not in shipments:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Given ID not found"
+        )
+    shipments.pop(id)
+    return {"detailed": f"Shipment with ID {id} has been deleted"}
+
 @app.get("/shipments/{field}")
 def get_shipments_fields(field: str, id: int) -> Any:
     return shipments[id][field]
