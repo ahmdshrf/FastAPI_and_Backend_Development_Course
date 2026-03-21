@@ -10,42 +10,49 @@ shipments = {
         "weight": 0.78,
         "destination": "Paris",
         "shipment_status": "in_transit",
+        "zip_code": "75001",
     },
     12079: {
         "content": "chair",
         "weight": 0.5,
         "destination": "London",
         "shipment_status": "delivered",
+        "zip_code": "SW1A 1AA",
     },
     12080: {
         "content": "bookshelf",
         "weight": 2.3,
         "destination": "Berlin",
         "shipment_status": "pending",
+        "zip_code": "10117",
     },
     12081: {
         "content": "lamp",
         "weight": 0.8,
         "destination": "Rome",
         "shipment_status": "in_transit",
+        "zip_code": "00100",
     },
     12082: {
         "content": "desk",
         "weight": 1.5,
         "destination": "Madrid",
         "shipment_status": "pending",
+        "zip_code": "28001",
     },
     12083: {
         "content": "cabinet",
         "weight": 3.2,
         "destination": "Amsterdam",
         "shipment_status": "delivered",
+        "zip_code": "1012",
     },
     12084: {
         "content": "sofa",
         "weight": 4.1,
         "destination": "Vienna",
         "shipment_status": "in_transit",
+        "zip_code": "1010",
     },
 }
 
@@ -59,6 +66,7 @@ def get_shipment_latest():
         "weight": shipments[latest_id]["weight"],
         "destination": shipments[latest_id]["destination"],
         "shipment_status": shipments[latest_id]["shipment_status"],
+        "zip_code": shipments[latest_id]["zip_code"],
     }
 
 
@@ -83,11 +91,13 @@ def create_shipment(
     weight = body.weight
     destination = body.destination
     shipment_status = body.shipment_status
+    zip_code = body.zip_code
     shipments[new_id] = {
         "content": content,
         "weight": weight,
         "destination": destination,
         "shipment_status": shipment_status,
+        "zip_code": zip_code,
     }
     return {
         "id": new_id,
@@ -107,12 +117,14 @@ def update_shipment(
     content = shipment.content
     destination = shipment.destination
     shipment_status = shipment.shipment_status
+    zip_code = shipment.zip_code
     
     shipments[id] = {
         "content": content,
         "weight": weight,
         "destination": destination,
         "shipment_status": shipment_status,
+        "zip_code": zip_code,
     }
     return shipments[id]
 
