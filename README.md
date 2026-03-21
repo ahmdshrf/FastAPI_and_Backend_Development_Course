@@ -3,7 +3,7 @@
 This repository contains code and examples from the O'Reilly course **Ultimate Guide to FastAPI and Backend Development**.
 
 - **Course Link:** [https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/](https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/)
-- **Status:** In Progress
+- **Status:** Chapter 5 complete (continuing through Chapter 6)
 - **Python:** 3.7+
 - **Framework:** FastAPI
 
@@ -64,10 +64,23 @@ Open `http://127.0.0.1:8000` in your browser.
   - Creates a new shipment.
   - Query params: `weight` (float), `destination` (str)
   - Body: `{"content": "string"}`
+  - New shipment default `shipment_status` set to `pending`
+
+- `PUT /shipment`
+  - Updates an existing shipment fully by ID.
+  - Body/query params: `id` (int), `content` (str), `weight` (float), `destination` (str), `shipment_status` (str)
+
+- `PATCH /shipment`
+  - Partially updates shipment fields.
+  - Body: partial update object (e.g., `{"weight": 1.0, "shipment_status":"delivered"}`)
+
+- `DELETE /shipment`
+  - Deletes a shipment by ID.
+  - Query param: `id` (int)
 
 - `GET /shipments/{field}`
   - Returns a specific field from a shipment.
-  - Path param: `field` (str, e.g., "content", "weight", "destination")
+  - Path param: `field` (str, e.g., "content", "weight", "destination", "shipment_status")
   - Query param: `id` (int)
 
 ### Example responses
