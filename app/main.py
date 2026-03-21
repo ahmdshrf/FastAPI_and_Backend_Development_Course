@@ -1,6 +1,13 @@
 from typing import Any
 from fastapi import FastAPI, HTTPException, status
 from scalar_fastapi import get_scalar_api_reference
+from pydantic import BaseModel
+
+class Shipment(BaseModel):
+    content: str
+    weight: float
+    destination: str
+    shipment_status: str
 
 app = FastAPI()
 
@@ -76,11 +83,13 @@ def get_shipment(id: int | None = None) -> dict[str, Any]:
 
 @app.post("/shipment")
 def create_shipment(
-    weight: float, destination: str, data: dict[str, Any]
+    body: Shipment
 ) -> dict[str, Any]:
     new_id = max(shipments.keys()) + 1
-    content = data["content"]
-
+    content = body.content
+    weight = body.weight
+    destination = body.destination
+    shipment_status = body.shipment_status
     if weight <= 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -96,7 +105,7 @@ def create_shipment(
         "content": content,
         "weight": weight,
         "destination": destination,
-        "shipment_status": "pending",
+        "shipment_status": shipment_status,
     }
     return {
         "id": new_id,
