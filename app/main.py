@@ -43,7 +43,12 @@ shipments  = {
 
 @app.get("/shipment/latest")
 def get_shipment_latest():
-    return shipments[max(shipments.keys())]
+    return {
+        "id" : max(shipments.keys()),
+        "content" : shipments[max(shipments.keys())]["content"],
+        "weight" : shipments[max(shipments.keys())]["weight"],
+        "destination" : shipments[max(shipments.keys())]["destination"]
+    }
 
 
 @app.get("/shipment")
@@ -76,6 +81,25 @@ def create_shipment(weight : float, destination : str, data : dict[str, Any]) ->
     return {
         "id" : new_id,
     }
+
+@app.put("/shipment")
+def update_shipment(id : int, content : str | None = None, weight : float | None = None, destination : str | None = None) -> dict[str, Any]:
+    if id not in shipments:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
+                            detail="Given ID not found")
+    if weight is not None:
+        if weight <= 0:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
+                                detail="Weight must be a positive number")
+        if weight > 100:
+            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, 
+                                detail="Weight must not exceed 100 kg")
+        shipments[id] = {
+            "content" : content,
+            "weight" : weight,
+            "destination" : destination
+        }
+    return shipments[id]
 
 @app.get("/shipments/{field}")
 def get_shipments_fields(field : str, id : int) -> Any:
