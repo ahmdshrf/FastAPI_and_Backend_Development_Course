@@ -1,14 +1,7 @@
 from typing import Any
 from fastapi import FastAPI, HTTPException, status
 from scalar_fastapi import get_scalar_api_reference
-from pydantic import BaseModel
-
-class Shipment(BaseModel):
-    content: str
-    weight: float
-    destination: str
-    shipment_status: str
-
+from .schemas import Shipment #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
 app = FastAPI()
 
 shipments = {
