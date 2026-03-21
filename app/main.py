@@ -83,17 +83,6 @@ def create_shipment(
     weight = body.weight
     destination = body.destination
     shipment_status = body.shipment_status
-    if weight <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Weight must be a positive number",
-        )
-
-    if weight > 100:
-        raise HTTPException(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail="Weight must not exceed 100 kg",
-        )
     shipments[new_id] = {
         "content": content,
         "weight": weight,
@@ -108,32 +97,23 @@ def create_shipment(
 @app.put("/shipment")
 def update_shipment(
     id: int,
-    content: str ,
-    weight: float ,
-    destination: str ,
-    shipment_status: str 
+    shipment: Shipment
 ) -> dict[str, Any]:
     if id not in shipments:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Given ID not found"
         )
-    if weight is not None:
-        if weight <= 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Weight must be a positive number",
-            )
-        if weight > 100:
-            raise HTTPException(
-                status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                detail="Weight must not exceed 100 kg",
-            )
-        shipments[id] = {
-            "content": content,
-            "weight": weight,
-            "destination": destination,
-            "shipment_status": shipment_status,
-        }
+    weight = shipment.weight
+    content = shipment.content
+    destination = shipment.destination
+    shipment_status = shipment.shipment_status
+    
+    shipments[id] = {
+        "content": content,
+        "weight": weight,
+        "destination": destination,
+        "shipment_status": shipment_status,
+    }
     return shipments[id]
 
 @app.patch("/shipment")
@@ -152,7 +132,7 @@ def patch_shipment(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Weight must be a positive number",
             )
-        if weight > 100:
+        if weight > 25:
             raise HTTPException(
                 status_code=status.HTTP_406_NOT_ACCEPTABLE,
                 detail="Weight must not exceed 100 kg",
