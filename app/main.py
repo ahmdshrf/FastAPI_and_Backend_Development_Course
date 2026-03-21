@@ -137,15 +137,13 @@ def update_shipment(
 @app.patch("/shipment")
 def patch_shipment(
     id: int,
-    content: str | None = None,
-    weight: float | None = None,
-    destination: str | None = None,
-    shipment_status: str | None = None,
+    body: dict[str, Any]
 ) -> dict[str, Any]:
     if id not in shipments:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Given ID not found"
         )
+    weight = body.get("weight")
     if weight is not None:
         if weight <= 0:
             raise HTTPException(
@@ -157,13 +155,15 @@ def patch_shipment(
                 status_code=status.HTTP_406_NOT_ACCEPTABLE,
                 detail="Weight must not exceed 100 kg",
             )
-        shipments[id]["weight"] = weight
-    if content :
-        shipments[id]["content"] = content
-    if destination :
-        shipments[id]["destination"] = destination
-    if shipment_status :
-        shipments[id]["shipment_status"] = shipment_status
+    shipments[id].update(body)
+    # if weight :
+    #     shipments[id]["weight"] = weight
+    # if content :
+    #     shipments[id]["content"] = content
+    # if destination :
+    #     shipments[id]["destination"] = destination
+    # if shipment_status :
+    #     shipments[id]["shipment_status"] = shipment_status
     return shipments[id]
 
 @app.get("/shipments/{field}")
