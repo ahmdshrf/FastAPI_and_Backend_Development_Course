@@ -106,10 +106,10 @@ def create_shipment(
 @app.put("/shipment")
 def update_shipment(
     id: int,
-    content: str | None = None,
-    weight: float | None = None,
-    destination: str | None = None,
-    shipment_status: str | None = None
+    content: str ,
+    weight: float ,
+    destination: str ,
+    shipment_status: str 
 ) -> dict[str, Any]:
     if id not in shipments:
         raise HTTPException(
