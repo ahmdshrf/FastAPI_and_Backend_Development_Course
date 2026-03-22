@@ -17,18 +17,23 @@ cursor.execute("""
 )""")
 
 #2. Add shipment data
-cursor.execute("""
-    INSERT INTO shipment 
-    VALUES
-    (12078, 'table', 0.78, 'Paris', 'in_transit', 75001),
-    (12079, 'chair', 0.5, 'London', 'delivered', 12345),
-    (12080, 'bookshelf', 2.3, 'Berlin', 'pending', 10117),
-    (12081, 'lamp', 0.8, 'Rome', 'in_transit', 100),
-    (12082, 'desk', 1.5, 'Madrid', 'pending', 28001),
-    (12083, 'cabinet', 3.2, 'Amsterdam', 'delivered', 1012),
-    (12084, 'laptop', 4.1, 'Vienna', 'in_transit', 1010)
-""")
-connection.commit()
+# cursor.execute("""
+#     INSERT INTO shipment 
+#     VALUES
+#     (12078, 'table', 0.78, 'Paris', 'in_transit', 75001),
+#     (12079, 'chair', 0.5, 'London', 'delivered', 12345),
+#     (12080, 'bookshelf', 2.3, 'Berlin', 'pending', 10117),
+#     (12081, 'lamp', 0.8, 'Rome', 'in_transit', 100),
+#     (12082, 'desk', 1.5, 'Madrid', 'pending', 28001),
+#     (12083, 'cabinet', 3.2, 'Amsterdam', 'delivered', 1012),
+#     (12084, 'laptop', 4.1, 'Vienna', 'in_transit', 1010)
+# """)
+# connection.commit()
+
+#3. Read a shipment by ID
+cursor.execute("SELECT * FROM shipment WHERE id = 12078")
+result = cursor.fetchall()
+print(result)
 
 connection.close()
 
