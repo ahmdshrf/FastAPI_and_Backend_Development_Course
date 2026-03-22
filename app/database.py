@@ -40,10 +40,12 @@ cursor.execute("""
 # connection.commit()
 
 #5. Update a shipment
-cursor.execute("""
+id = 12082
+shipment_status = "delivered"
+cursor.execute(f"""
     UPDATE shipment 
-    SET shipment_status = 'in_transit' 
-    WHERE id = 12082
+    SET shipment_status = '{shipment_status}' 
+    WHERE id = {id}
     """)
 connection.commit()  
 
