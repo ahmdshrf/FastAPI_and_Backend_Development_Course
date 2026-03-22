@@ -2,66 +2,67 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, status
 from scalar_fastapi import get_scalar_api_reference
 from .schemas import ShipmentCreate, ShipmentRead , ShipmentStatus, ShipmentUpdate #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
+from .database import shipments, save
 app = FastAPI()
 
-shipments = {
-    12078: {
-        "content": "table",
-        "weight": 0.78,
-        "destination": "Paris",
-        "shipment_status": "in_transit",
-        "zip_code": 75001,
-    },
-    12079: {
-        "content": "chair",
-        "weight": 0.5,
-        "destination": "London",
-        "shipment_status": "delivered",
-        "zip_code": 12345,
-    },
-    12080: {
-        "content": "bookshelf",
-        "weight": 2.3,
-        "destination": "Berlin",
-        "shipment_status": "pending",
-        "zip_code": 10117,
-    },
-    12081: {
-        "content": "lamp",
-        "weight": 0.8,
-        "destination": "Rome",
-        "shipment_status": "in_transit",
-        "zip_code": 100,
-    },
-    12082: {
-        "content": "desk",
-        "weight": 1.5,
-        "destination": "Madrid",
-        "shipment_status": "pending",
-        "zip_code": 28001,
-    },
-    12083: {
-        "content": "cabinet",
-        "weight": 3.2,
-        "destination": "Amsterdam",
-        "shipment_status": "delivered",
-        "zip_code": 1012,
-    },
-    12084: {
-        "content": "sofa",
-        "weight": 4.1,
-        "destination": "Vienna",
-        "shipment_status": "in_transit",
-        "zip_code": 1010,
-    },
-}
+# shipments = {
+#     12078: {
+#         "content": "table",
+#         "weight": 0.78,
+#         "destination": "Paris",
+#         "shipment_status": "in_transit",
+#         "zip_code": 75001,
+#     },
+#     12079: {
+#         "content": "chair",
+#         "weight": 0.5,
+#         "destination": "London",
+#         "shipment_status": "delivered",
+#         "zip_code": 12345,
+#     },
+#     12080: {
+#         "content": "bookshelf",
+#         "weight": 2.3,
+#         "destination": "Berlin",
+#         "shipment_status": "pending",
+#         "zip_code": 10117,
+#     },
+#     12081: {
+#         "content": "lamp",
+#         "weight": 0.8,
+#         "destination": "Rome",
+#         "shipment_status": "in_transit",
+#         "zip_code": 100,
+#     },
+#     12082: {
+#         "content": "desk",
+#         "weight": 1.5,
+#         "destination": "Madrid",
+#         "shipment_status": "pending",
+#         "zip_code": 28001,
+#     },
+#     12083: {
+#         "content": "cabinet",
+#         "weight": 3.2,
+#         "destination": "Amsterdam",
+#         "shipment_status": "delivered",
+#         "zip_code": 1012,
+#     },
+#     12084: {
+#         "content": "sofa",
+#         "weight": 4.1,
+#         "destination": "Vienna",
+#         "shipment_status": "in_transit",
+#         "zip_code": 1010,
+#     },
+# }
 
 
 @app.get("/shipment/latest")
 def get_shipment_latest():
     latest_id = max(shipments.keys())
     return {
-        "id": latest_id,
+        "id": shipments[latest_id]["id"],
         "content": shipments[latest_id]["content"],
         "weight": shipments[latest_id]["weight"],
         "destination": shipments[latest_id]["destination"],
@@ -89,8 +90,10 @@ def create_shipment(
     new_id = max(shipments.keys()) + 1
     shipments[new_id] = {
         **body.model_dump(),
+        "id": new_id,
         "shipment_status": ShipmentStatus.PLACED,
     }
+    save()
     return {
         "id": new_id,
     }
@@ -118,6 +121,7 @@ def update_shipment(
         "shipment_status": shipment_status,
         "zip_code": zip_code,
     }
+    save()
     return shipments[id]
 
 @app.patch("/shipment", response_model=ShipmentRead)
@@ -131,6 +135,7 @@ def patch_shipment(
         )
     body_dict = body.model_dump(exclude_none=True)
     shipments[id].update(body_dict)
+    save()
     # if weight :
     #     shipments[id]["weight"] = weight
     # if content :
@@ -148,6 +153,7 @@ def delete_shipment(id: int) -> dict[str, Any]:
             status_code=status.HTTP_404_NOT_FOUND, detail="Given ID not found"
         )
     shipments.pop(id)
+    save()
     return {"detailed": f"Shipment with ID {id} has been deleted"}
 
 @app.get("/shipments/{field}")
