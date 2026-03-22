@@ -31,9 +31,13 @@ cursor.execute("""
 # connection.commit()
 
 #3. Read a shipment by ID
-cursor.execute("SELECT * FROM shipment WHERE id = 12078")
-result = cursor.fetchall()
-print(result)
+# cursor.execute("SELECT * FROM shipment WHERE id = 12078")
+# result = cursor.fetchall()
+# print(result)
+
+#4. Delete a shipment by ID
+cursor.execute("DELETE FROM shipment WHERE id = 12084")
+connection.commit()
 
 connection.close()
 
