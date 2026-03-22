@@ -40,7 +40,7 @@ cursor.execute("""
 # connection.commit()
 
 #5. Update a shipment
-id = 12082
+id = "0 OR TRUE"
 shipment_status = "delivered"
 cursor.execute(f"""
     UPDATE shipment 
