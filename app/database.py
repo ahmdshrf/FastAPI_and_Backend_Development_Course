@@ -41,12 +41,12 @@ cursor.execute("""
 
 #5. Update a shipment
 id = 12078
-shipment_status = "in_transit"
+shipment_status = "out_for_delivery"
 cursor.execute("""
     UPDATE shipment 
-    SET shipment_status = ? 
-    WHERE id = ?
-    """, (shipment_status, id))
+    SET shipment_status = :shipment_status 
+    WHERE id = :id
+    """, {"shipment_status": shipment_status, "id": id})
 connection.commit()  
 
 #6. Delete a table
