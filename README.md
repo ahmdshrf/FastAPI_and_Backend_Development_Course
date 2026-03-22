@@ -3,7 +3,7 @@
 This repository contains code and examples from the O'Reilly course **Ultimate Guide to FastAPI and Backend Development**.
 
 - **Course Link:** [https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/](https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/)
-- **Status:** Chapter 5 complete (continuing through Chapter 6)
+- **Status:** Chapter 6 completed
 - **Python:** 3.7+
 - **Framework:** FastAPI
 
@@ -56,32 +56,46 @@ Open `http://127.0.0.1:8000` in your browser.
 - `GET /shipment`
   - Returns the latest shipment or a specific shipment by ID.
   - Query param: `id` (optional, int)
+  - Response: `ShipmentRead` model
 
 - `GET /shipment/latest`
-  - Returns the most recent shipment.
+  - Returns the most recent shipment with ID.
+  - Response: JSON with `id`, `content`, `weight`, `destination`, `shipment_status`, `zip_code`
 
 - `POST /shipment`
   - Creates a new shipment.
-  - Query params: `weight` (float), `destination` (str)
-  - Body: `{"content": "string"}`
-  - New shipment default `shipment_status` set to `pending`
+  - Body: `ShipmentCreate` model (content, weight, destination, zip_code optional)
+  - Response: `{"id": new_id}`
 
 - `PUT /shipment`
-  - Updates an existing shipment fully by ID.
-  - Body/query params: `id` (int), `content` (str), `weight` (float), `destination` (str), `shipment_status` (str)
+  - Updates an entire shipment.
+  - Query param: `id` (int)
+  - Body: `ShipmentRead` model
+  - Response: Updated `ShipmentRead`
 
 - `PATCH /shipment`
-  - Partially updates shipment fields.
-  - Body: partial update object (e.g., `{"weight": 1.0, "shipment_status":"delivered"}`)
+  - Partially updates a shipment.
+  - Query param: `id` (int)
+  - Body: `ShipmentUpdate` model (optional fields)
+  - Response: Updated `ShipmentRead`
 
 - `DELETE /shipment`
   - Deletes a shipment by ID.
   - Query param: `id` (int)
+  - Response: `{"detail": "Shipment with ID {id} has been deleted"}`
 
 - `GET /shipments/{field}`
   - Returns a specific field from a shipment.
-  - Path param: `field` (str, e.g., "content", "weight", "destination", "shipment_status")
+  - Path param: `field` (str, e.g., "content", "weight", "destination", "shipment_status", "zip_code")
   - Query param: `id` (int)
+  - Response: Field value
+
+### Data Models
+
+- **ShipmentStatus**: Enum (`pending`, `in_transit`, `delivered`, `placed`)
+- **ShipmentCreate**: `content` (str, max 50), `weight` (float >0 <=25), `destination` (str, max 100), `zip_code` (int, optional)
+- **ShipmentRead**: Inherits ShipmentCreate + `shipment_status`
+- **ShipmentUpdate**: Optional fields from ShipmentRead
 
 ### Example responses
 
@@ -90,11 +104,33 @@ Open `http://127.0.0.1:8000` in your browser.
 {
   "content": "sofa",
   "weight": 4.1,
-  "destination": "Vienna"
+  "destination": "Vienna",
+  "zip_code": 1010,
+  "shipment_status": "in_transit"
 }
 ```
 
-**POST /shipment** (response):
+**GET /shipment/latest**:
+```json
+{
+  "id": 12084,
+  "content": "sofa",
+  "weight": 4.1,
+  "destination": "Vienna",
+  "shipment_status": "in_transit",
+  "zip_code": 1010
+}
+```
+
+**POST /shipment** (request body):
+```json
+{
+  "content": "books",
+  "weight": 1.2,
+  "destination": "Tokyo"
+}
+```
+Response:
 ```json
 {
   "id": 12085
@@ -116,7 +152,8 @@ Open `http://127.0.0.1:8000` in your browser.
 ```
 app/
 ├── __init__.py
-└── main.py       # main FastAPI app implementation
+├── main.py       # main FastAPI app implementation
+└── schemas.py    # Pydantic models for request/response validation
 ```
 
 ## Development Notes
