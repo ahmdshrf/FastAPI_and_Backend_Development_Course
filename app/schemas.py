@@ -11,9 +11,17 @@ class ShipmentStatus(str, Enum):
     DELIVERED = "delivered"
     PLACED = "placed"
 
-class Shipment(BaseModel):
+class BaseShipment(BaseModel):
     content: str = Field(max_length=50, description="Description of the shipment content")
     weight: float = Field(gt=0, le=25, description="Weight must be a positive number and not exceed 25 kg")
     destination: str = Field(max_length=100, description="Destination of the shipment")
-    shipment_status: ShipmentStatus = Field(description="Status of the shipment")
     zip_code: int | None = Field(default_factory=random_zip_code, description="it will be generated randomly if not provided")
+
+class ShipmentRead(BaseShipment):
+    shipment_status: ShipmentStatus = Field(description="Status of the shipment")
+
+class ShipmentCreate(BaseShipment):
+    pass
+
+class ShipmentUpdate(BaseModel):
+    shipment_status: ShipmentStatus = Field(description="Status of the shipment")
