@@ -1,7 +1,7 @@
 from typing import Any
 from fastapi import FastAPI, HTTPException, status
 from scalar_fastapi import get_scalar_api_reference
-from .schemas import Shipment #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
+from .schemas import Shipment , ShipmentStatus #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
 app = FastAPI()
 
 shipments = {
@@ -70,8 +70,8 @@ def get_shipment_latest():
     }
 
 
-@app.get("/shipment")
-def get_shipment(id: int | None = None) -> dict[str, Any]:
+@app.get("/shipment", response_model=Shipment)
+def get_shipment(id: int | None = None) :
 
     if id is None:
         return shipments[max(shipments.keys())]
@@ -131,24 +131,12 @@ def update_shipment(
 @app.patch("/shipment")
 def patch_shipment(
     id: int,
-    body: dict[str, Any]
+    body: dict[str, ShipmentStatus]
 ) -> dict[str, Any]:
     if id not in shipments:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Given ID not found"
         )
-    weight = body.get("weight")
-    if weight is not None:
-        if weight <= 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Weight must be a positive number",
-            )
-        if weight > 25:
-            raise HTTPException(
-                status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                detail="Weight must not exceed 100 kg",
-            )
     shipments[id].update(body)
     # if weight :
     #     shipments[id]["weight"] = weight
