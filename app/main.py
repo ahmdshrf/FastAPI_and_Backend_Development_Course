@@ -87,16 +87,9 @@ def create_shipment(
     body: ShipmentCreate
 ) -> dict[str, int]:
     new_id = max(shipments.keys()) + 1
-    content = body.content
-    weight = body.weight
-    destination = body.destination
-    zip_code = body.zip_code
     shipments[new_id] = {
-        "content": content,
-        "weight": weight,
-        "destination": destination,
+        **body.model_dump(),
         "shipment_status": ShipmentStatus.PLACED,
-        "zip_code": zip_code,
     }
     return {
         "id": new_id,
@@ -136,7 +129,8 @@ def patch_shipment(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Given ID not found"
         )
-    shipments[id].update(body)
+    body_dict = body.model_dump(exclude_none=True)
+    shipments[id].update(body_dict)
     # if weight :
     #     shipments[id]["weight"] = weight
     # if content :
