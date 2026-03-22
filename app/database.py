@@ -6,15 +6,15 @@ connection = sqlite3.connect("sqlite.db")
 cursor = connection.cursor()
 
 #1. Create a table
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS shipment (
-    id INTEGER PRIMARY KEY,
-    content TEXT,
-    weight REAL,
-    destination TEXT,
-    shipment_status TEXT,
-    zip_code INTEGER
-)""")
+# cursor.execute("""
+#     CREATE TABLE IF NOT EXISTS shipment (
+#     id INTEGER PRIMARY KEY,
+#     content TEXT,
+#     weight REAL,
+#     destination TEXT,
+#     shipment_status TEXT,
+#     zip_code INTEGER
+# )""")
 
 #2. Add shipment data
 # cursor.execute("""
@@ -36,7 +36,11 @@ cursor.execute("""
 # print(result)
 
 #4. Delete a shipment by ID
-cursor.execute("DELETE FROM shipment WHERE id = 12084")
+# cursor.execute("DELETE FROM shipment WHERE id = 12084")
+# connection.commit()
+
+#5. Delete a table
+cursor.execute("DROP TABLE shipment")
 connection.commit()
 
 connection.close()
