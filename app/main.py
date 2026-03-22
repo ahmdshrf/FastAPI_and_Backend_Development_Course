@@ -1,7 +1,7 @@
 from typing import Any
 from fastapi import FastAPI, HTTPException, status
 from scalar_fastapi import get_scalar_api_reference
-from .schemas import Shipment , ShipmentStatus #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
+from .schemas import ShipmentCreate, ShipmentRead , ShipmentStatus, ShipmentUpdate #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
 app = FastAPI()
 
 shipments = {
@@ -70,7 +70,7 @@ def get_shipment_latest():
     }
 
 
-@app.get("/shipment", response_model=Shipment)
+@app.get("/shipment", response_model=ShipmentRead)
 def get_shipment(id: int | None = None) :
 
     if id is None:
@@ -84,19 +84,18 @@ def get_shipment(id: int | None = None) :
 
 @app.post("/shipment")
 def create_shipment(
-    body: Shipment
-) -> dict[str, Any]:
+    body: ShipmentCreate
+) -> dict[str, int]:
     new_id = max(shipments.keys()) + 1
     content = body.content
     weight = body.weight
     destination = body.destination
-    shipment_status = body.shipment_status
     zip_code = body.zip_code
     shipments[new_id] = {
         "content": content,
         "weight": weight,
         "destination": destination,
-        "shipment_status": shipment_status,
+        "shipment_status": ShipmentStatus.PLACED,
         "zip_code": zip_code,
     }
     return {
@@ -104,10 +103,10 @@ def create_shipment(
     }
 
 
-@app.put("/shipment")
+@app.put("/shipment", response_model=ShipmentRead)
 def update_shipment(
     id: int,
-    shipment: Shipment
+    shipment: ShipmentRead
 ) -> dict[str, Any]:
     if id not in shipments:
         raise HTTPException(
@@ -128,10 +127,10 @@ def update_shipment(
     }
     return shipments[id]
 
-@app.patch("/shipment")
+@app.patch("/shipment", response_model=ShipmentRead)
 def patch_shipment(
     id: int,
-    body: dict[str, ShipmentStatus]
+    body: ShipmentUpdate
 ) -> dict[str, Any]:
     if id not in shipments:
         raise HTTPException(
