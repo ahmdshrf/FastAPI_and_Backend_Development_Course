@@ -40,13 +40,13 @@ cursor.execute("""
 # connection.commit()
 
 #5. Update a shipment
-id = "0 OR TRUE"
-shipment_status = "delivered"
-cursor.execute(f"""
+id = 12078
+shipment_status = "in_transit"
+cursor.execute("""
     UPDATE shipment 
-    SET shipment_status = '{shipment_status}' 
-    WHERE id = {id}
-    """)
+    SET shipment_status = ? 
+    WHERE id = ?
+    """, (shipment_status, id))
 connection.commit()  
 
 #6. Delete a table
