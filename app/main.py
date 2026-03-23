@@ -99,33 +99,8 @@ def create_shipment(
     }
 
 
-@app.put("/shipment", response_model=ShipmentRead)
-def update_shipment(
-    id: int,
-    shipment: ShipmentRead
-) -> dict[str, Any]:
-    if id not in shipments:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Given ID not found"
-        )
-    weight = shipment.weight
-    content = shipment.content
-    destination = shipment.destination
-    shipment_status = shipment.shipment_status
-    zip_code = shipment.zip_code
-    
-    shipments[id] = {
-        "content": content,
-        "weight": weight,
-        "destination": destination,
-        "shipment_status": shipment_status,
-        "zip_code": zip_code,
-    }
-    save()
-    return shipments[id]
-
 @app.patch("/shipment", response_model=ShipmentRead)
-def patch_shipment(
+def update_shipment(
     id: int,
     body: ShipmentUpdate
 ) -> dict[str, Any]:
