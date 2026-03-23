@@ -10,6 +10,7 @@ class ShipmentStatus(str, Enum):
     IN_TRANSIT = "in_transit"
     DELIVERED = "delivered"
     PLACED = "placed"
+    OUT_FOR_DELIVERY = "out_for_delivery"
 
 class BaseShipment(BaseModel):
     content: str = Field(max_length=50, description="Description of the shipment content")

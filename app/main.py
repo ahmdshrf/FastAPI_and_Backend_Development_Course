@@ -1,7 +1,7 @@
 from typing import Any
 from fastapi import FastAPI, HTTPException, status
 from scalar_fastapi import get_scalar_api_reference
-from .schemas import ShipmentCreate, ShipmentRead , ShipmentStatus, ShipmentUpdate #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
+from .schemas import ShipmentCreate, ShipmentRead , ShipmentUpdate #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
 from .database import Database
 app = FastAPI()
 

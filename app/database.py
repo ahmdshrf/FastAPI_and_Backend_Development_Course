@@ -5,7 +5,7 @@ from app.schemas import ShipmentCreate, ShipmentUpdate
 
 class Database:
     def __init__(self):
-        self.conn = sqlite3.connect("sqlite.db")
+        self.conn = sqlite3.connect("sqlite.db", check_same_thread=False)
         self.cur = self.conn.cursor()
         # Create a table
         self.create_table()
@@ -77,20 +77,12 @@ class Database:
         self.cur.execute(
             """
             UPDATE shipment 
-            SET shipment_status = :shipment_status 
-            SET CONTENT = :content
-            SET weight = :weight
-            SET destination = :destination
-            SET zip_code = :zip_code
+            SET shipment_status = :shipment_status
             WHERE id = :id
             """,
             {
-                "shipment_status": shipment.shipment_status,
-                "content": shipment.content,
-                "weight": shipment.weight,
-                "destination": shipment.destination,
-                "zip_code": shipment.zip_code,
-                "id": id
+                "id": id,
+                **shipment.model_dump()
             },
         )
         self.conn.commit()
