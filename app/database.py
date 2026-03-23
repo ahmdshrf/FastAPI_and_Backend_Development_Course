@@ -22,10 +22,10 @@ class Database:
         )""")
         self.conn.commit()
 
-    def create_shipment(self, shipment: ShipmentCreate) -> int | None:
+    def create_shipment(self, shipment: ShipmentCreate) -> int :
         self.cur.execute("""select max(id) from shipment""")
         max_id = self.cur.fetchone()
-        new_id = max_id[0] + 1 if max_id[0] is not None else None
+        new_id = max_id[0] + 1 if max_id[0] is not None else 12078
         self.cur.execute(
             """
             INSERT INTO shipment
@@ -43,19 +43,19 @@ class Database:
         self.conn.commit()
         return new_id
 
-    def get_shipment(self, id: int) -> dict[str, Any] | None:
+    def get_shipment(self, id: int) -> dict[str, Any] :
         self.cur.execute("SELECT * FROM shipment WHERE id = ?", (id,))
         row = self.cur.fetchone()
-        if row:
-            return {
-                "id": row[0],
-                "content": row[1],
-                "weight": row[2],
-                "destination": row[3],
-                "shipment_status": row[4],
-                "zip_code": row[5],
-            }
-        return None
+        
+        return {
+            "id": row[0],
+            "content": row[1],
+            "weight": row[2],
+            "destination": row[3],
+            "shipment_status": row[4],
+            "zip_code": row[5],
+        }
+        
     
     def get_latest_shipment(self) -> dict[str, Any] | None:
         self.cur.execute("SELECT * FROM shipment ORDER BY id DESC LIMIT 1")
@@ -73,7 +73,7 @@ class Database:
 
     def update_shipment(
         self, id: int, shipment: ShipmentUpdate
-    ) -> dict[str, Any] | None:
+    ) -> dict[str, Any] :
         self.cur.execute(
             """
             UPDATE shipment 
