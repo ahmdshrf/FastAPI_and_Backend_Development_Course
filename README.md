@@ -3,7 +3,7 @@
 This repository contains code and examples from the O'Reilly course **Ultimate Guide to FastAPI and Backend Development**.
 
 - **Course Link:** [https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/](https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/)
-- **Status:** Chapter 6 completed
+- **Status:** Chapter 7 completed
 - **Python:** 3.7+
 - **Framework:** FastAPI
 
@@ -14,7 +14,9 @@ A hands-on learning project for FastAPI and backend development. The app include
 ## Features
 
 - FastAPI app scaffold
-- JSON-based REST endpoint
+- SQLite database-backed shipment storage
+- CRUD API endpoints for shipments
+- Pydantic models for validation
 - FastAPI dev server with auto-reload
 - Swagger UI and ReDoc docs
 
@@ -54,61 +56,38 @@ Open `http://127.0.0.1:8000` in your browser.
 ## API Endpoints
 
 - `GET /shipment`
-  - Returns the latest shipment or a specific shipment by ID.
-  - Query param: `id` (optional, int)
+  - Returns a shipment by ID.
+  - Query param: `id` (int, required)
   - Response: `ShipmentRead` model
 
 - `GET /shipment/latest`
-  - Returns the most recent shipment with ID.
-  - Response: JSON with `id`, `content`, `weight`, `destination`, `shipment_status`, `zip_code`
+  - Returns the most recent shipment.
+  - Response: `ShipmentRead` model
 
 - `POST /shipment`
   - Creates a new shipment.
   - Body: `ShipmentCreate` model (content, weight, destination, zip_code optional)
-  - Response: `{"id": new_id}`
-
-- `PUT /shipment`
-  - Updates an entire shipment.
-  - Query param: `id` (int)
-  - Body: `ShipmentRead` model
-  - Response: Updated `ShipmentRead`
+  - Response: `{ "id": new_id }`
 
 - `PATCH /shipment`
   - Partially updates a shipment.
   - Query param: `id` (int)
-  - Body: `ShipmentUpdate` model (optional fields)
+  - Body: `ShipmentUpdate` model (all fields optional)
   - Response: Updated `ShipmentRead`
 
 - `DELETE /shipment`
   - Deletes a shipment by ID.
   - Query param: `id` (int)
-  - Response: `{"detail": "Shipment with ID {id} has been deleted"}`
-
-- `GET /shipments/{field}`
-  - Returns a specific field from a shipment.
-  - Path param: `field` (str, e.g., "content", "weight", "destination", "shipment_status", "zip_code")
-  - Query param: `id` (int)
-  - Response: Field value
+  - Response: `{ "detail": "Shipment with ID {id} has been deleted" }`
 
 ### Data Models
 
-- **ShipmentStatus**: Enum (`pending`, `in_transit`, `delivered`, `placed`)
+- **ShipmentStatus**: Enum (`pending`, `in_transit`, `delivered`, `placed`, `out_for_delivery`)
 - **ShipmentCreate**: `content` (str, max 50), `weight` (float >0 <=25), `destination` (str, max 100), `zip_code` (int, optional)
 - **ShipmentRead**: Inherits ShipmentCreate + `shipment_status`
-- **ShipmentUpdate**: Optional fields from ShipmentRead
+- **ShipmentUpdate**: All fields optional, for partial update
 
 ### Example responses
-
-**GET /shipment** (latest):
-```json
-{
-  "content": "sofa",
-  "weight": 4.1,
-  "destination": "Vienna",
-  "zip_code": 1010,
-  "shipment_status": "in_transit"
-}
-```
 
 **GET /shipment/latest**:
 ```json
@@ -137,11 +116,6 @@ Response:
 }
 ```
 
-**GET /shipments/content?id=12078**:
-```
-"table"
-```
-
 ## API Documentation
 
 - Swagger: `http://127.0.0.1:8000/docs`
@@ -152,8 +126,9 @@ Response:
 ```
 app/
 ├── __init__.py
-├── main.py       # main FastAPI app implementation
-└── schemas.py    # Pydantic models for request/response validation
+├── main.py       # FastAPI app and API endpoints
+├── schemas.py    # Pydantic models for request/response validation
+└── database.py   # SQLite database logic and persistence
 ```
 
 ## Development Notes
