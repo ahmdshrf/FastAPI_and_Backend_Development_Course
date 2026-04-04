@@ -157,3 +157,4 @@ def managed_db():
 with managed_db() as db:
     print(db.get_shipment(12078))
     print(db.get_latest_shipment())
+    print(db.get_shipment(12079))

@@ -1,16 +1,10 @@
-from enum import Enum
 from random import randint
 from pydantic import BaseModel,Field
+from app.database.models import ShipmentStatus
 
 def random_zip_code():
     return randint(11000, 11999)
 
-class ShipmentStatus(str, Enum):
-    PENDING = "pending"
-    IN_TRANSIT = "in_transit"
-    DELIVERED = "delivered"
-    PLACED = "placed"
-    OUT_FOR_DELIVERY = "out_for_delivery"
 
 class BaseShipment(BaseModel):
     content: str = Field(max_length=50, description="Description of the shipment content")
