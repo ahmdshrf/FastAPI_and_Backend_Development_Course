@@ -12,13 +12,6 @@ def create_db_tables():
     SQLModel.metadata.create_all(bind=engine)
 
 
-session = Session(bind= engine)
-session.get(
-    Shipment,
-    12078
-)
-session.add(
-    Shipment(id=12071)
-)
-
-session.commit()
+def get_session():
+    with Session(bind=engine) as session:
+        yield session

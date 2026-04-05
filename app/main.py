@@ -1,10 +1,13 @@
 from contextlib import asynccontextmanager
 from typing import Any
-from fastapi import FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status
 from scalar_fastapi import get_scalar_api_reference
+from sqlmodel import Session
+
+from app.database.models import Shipment
 from .schemas import ShipmentCreate, ShipmentRead , ShipmentUpdate #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
 from .database import Database
-from app.database.session import create_db_tables
+from app.database.session import create_db_tables, get_session
 
 @asynccontextmanager
 async def lifespan_handler(app : FastAPI):
@@ -77,8 +80,8 @@ def get_shipment_latest() -> dict[str, Any] | None:
     return latest_shipment
 
 @app.get("/shipment", response_model=ShipmentRead)
-def get_shipment(id: int) -> dict[str, Any] :
-    shipment = db.get_shipment(id)
+def get_shipment(id: int, session : Session = Depends(get_session)) -> Shipment :
+    shipment = session.get(Shipment,id)
     if shipment is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Givern ID not found"
@@ -90,7 +93,8 @@ def get_shipment(id: int) -> dict[str, Any] :
 
 @app.post("/shipment")
 def create_shipment(
-    body: ShipmentCreate
+    body: ShipmentCreate,
+    session :Session = Depends(get_session)
 ) -> dict[str, int]:
     new_id = db.create_shipment(body)
     return {
