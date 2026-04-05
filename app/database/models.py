@@ -11,9 +11,9 @@ class ShipmentStatus(str, Enum):
 
 class Shipment(SQLModel) :
     __tablename__ = "shipment"
-    id : int
+    id : int = Field(primary_key=True)
     content : str
-    weight : float
+    weight : float = Field(le=25)
     destination : int
     shipment_status : ShipmentStatus = Field(description="Status of the shipment")
     estimated_delivery : str
