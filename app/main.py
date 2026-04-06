@@ -5,12 +5,12 @@ from typing import Any
 from fastapi import  FastAPI, HTTPException, status
 from scalar_fastapi import get_scalar_api_reference
 
-from app.database.models import Shipment, ShipmentStatus
+from app.database.models import ShipmentStatus
 from app.database.session import SessionDep, create_db_tables
 
 from .schemas import (  #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
     ShipmentCreate,
-    ShipmentRead,
+    Shipment,
     ShipmentUpdate,
 )
 
@@ -76,7 +76,7 @@ app = FastAPI(lifespan=lifespan_handler)
 # }
 
 
-# @app.get("/shipment/latest", response_model=ShipmentRead)
+# @app.get("/shipment/latest", response_model=Shipment)
 # def get_shipment_latest() -> dict[str, Any] | None:
 #     latest_shipment = db.get_latest_shipment()
 #     if latest_shipment is None:
@@ -85,7 +85,7 @@ app = FastAPI(lifespan=lifespan_handler)
 #         )
 #     return latest_shipment
 
-@app.get("/shipment", response_model=ShipmentRead)
+@app.get("/shipment", response_model=Shipment)
 def get_shipment(id: int, session : SessionDep ) -> Shipment :
     shipment = session.get(Shipment,id)
     if shipment is None:
@@ -105,7 +105,7 @@ def create_shipment(
     new_shipment = Shipment(
         **shipment.model_dump(),
         shipment_status=ShipmentStatus.PLACED,
-        estimated_delivery=(datetime.now() + timedelta(days=3)).isoformat()
+        estimated_delivery=datetime.now() + timedelta(days=3)
     )
     session.add(new_shipment)
     session.commit()
@@ -113,7 +113,7 @@ def create_shipment(
     return {"id": new_shipment.id}
 
 
-@app.patch("/shipment", response_model=ShipmentRead)
+@app.patch("/shipment", response_model=Shipment)
 def update_shipment(
     id: int,
     shipment_update: ShipmentUpdate,
