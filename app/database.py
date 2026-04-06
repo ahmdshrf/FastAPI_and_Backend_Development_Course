@@ -1,14 +1,17 @@
+from contextlib import contextmanager
 import sqlite3
 from typing import Any
+
 from app.schemas import ShipmentCreate, ShipmentUpdate
 
 
 class Database:
-    def __init__(self):
+
+    def connect_to_db(self):
         self.conn = sqlite3.connect("sqlite.db", check_same_thread=False)
         self.cur = self.conn.cursor()
-        # Create a table
-        self.create_table()
+        print("connected to the database...")
+
 
     def create_table(self):
         self.cur.execute("""
@@ -93,11 +96,21 @@ class Database:
         self.conn.commit()
 
     def close(self):
+        print("connection closed")
         if self.conn:
             self.conn.close()
             self.conn = None
             self.cursor = None
 
+    # def __enter__(self):
+    #     print("enter the context...")
+    #     self.connect_to_db()
+    #     self.create_table()
+    #     return self
+    
+    # def __exit__(self,*arg):
+    #     print("exit the context...")
+    #     self.close()
 
 # 2. Add shipment data
 # cursor.execute("""
@@ -121,3 +134,27 @@ class Database:
 # 6. Delete a table
 # cursor.execute("DROP TABLE shipment")
 # connection.commit()
+
+# db = Database()
+
+# print(db.get_shipment(12078))
+# print(db.get_latest_shipment())
+
+# db.close()
+@contextmanager
+def managed_db():
+    print("enter the context...")
+    db = Database()
+    db.connect_to_db()
+    db.create_table()
+
+    yield db
+    print("exit the context...")
+
+    db.close()
+
+
+with managed_db() as db:
+    print(db.get_shipment(12078))
+    print(db.get_latest_shipment())
+    print(db.get_shipment(12079))

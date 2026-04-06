@@ -1,11 +1,28 @@
+from contextlib import asynccontextmanager
+from datetime import datetime, timedelta
 from typing import Any
-from fastapi import FastAPI, HTTPException, status
-from scalar_fastapi import get_scalar_api_reference
-from .schemas import ShipmentCreate, ShipmentRead , ShipmentUpdate #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
-from .database import Database
-app = FastAPI()
 
-db = Database()
+from fastapi import  FastAPI, HTTPException, status
+from scalar_fastapi import get_scalar_api_reference
+
+from app.database.models import ShipmentStatus
+from app.database.session import SessionDep, create_db_tables
+
+from .schemas import (  #you can also import Shipment from app.schemas if you want to run the code outside of the app directory
+    ShipmentCreate,
+    Shipment,
+    ShipmentUpdate,
+)
+
+
+@asynccontextmanager
+async def lifespan_handler(app : FastAPI):
+    create_db_tables()
+    yield
+
+app = FastAPI(lifespan=lifespan_handler)
+
+# db = Database()
 # shipments = {
 #     12078: {
 #         "content": "table",
@@ -59,18 +76,18 @@ db = Database()
 # }
 
 
-@app.get("/shipment/latest", response_model=ShipmentRead)
-def get_shipment_latest() -> dict[str, Any] | None:
-    latest_shipment = db.get_latest_shipment()
-    if latest_shipment is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Givern ID not found"
-        )
-    return latest_shipment
+# @app.get("/shipment/latest", response_model=Shipment)
+# def get_shipment_latest() -> dict[str, Any] | None:
+#     latest_shipment = db.get_latest_shipment()
+#     if latest_shipment is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND, detail="Givern ID not found"
+#         )
+#     return latest_shipment
 
-@app.get("/shipment", response_model=ShipmentRead)
-def get_shipment(id: int) -> dict[str, Any] :
-    shipment = db.get_shipment(id)
+@app.get("/shipment", response_model=Shipment)
+def get_shipment(id: int, session : SessionDep ) -> Shipment :
+    shipment = session.get(Shipment,id)
     if shipment is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Givern ID not found"
@@ -82,25 +99,48 @@ def get_shipment(id: int) -> dict[str, Any] :
 
 @app.post("/shipment")
 def create_shipment(
-    body: ShipmentCreate
+    shipment: ShipmentCreate,
+    session : SessionDep
 ) -> dict[str, int]:
-    new_id = db.create_shipment(body)
-    return {
-        "id": new_id
-    }
+    new_shipment = Shipment(
+        **shipment.model_dump(),
+        shipment_status=ShipmentStatus.PLACED,
+        estimated_delivery=datetime.now() + timedelta(days=3)
+    )
+    session.add(new_shipment)
+    session.commit()
+    session.refresh(new_shipment)
+    return {"id": new_shipment.id}
 
 
-@app.patch("/shipment", response_model=ShipmentRead)
+@app.patch("/shipment", response_model=Shipment)
 def update_shipment(
     id: int,
-    body: ShipmentUpdate
-) -> dict[str, Any]:
-    update_shipment = db.update_shipment(id, body)
-    return update_shipment
+    shipment_update: ShipmentUpdate,
+    session: SessionDep
+):
+    update = shipment_update.model_dump(exclude_none=True)
+    if update is None :
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No Data provided"
+        )
+    shipment = session.get(Shipment, id)
+    if shipment is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Given ID not found"
+        )
+    shipment.sqlmodel_update(update)
+    session.add(shipment)
+    session.commit()
+    session.refresh(shipment)
+    return shipment
 
 @app.delete("/shipment")
-def delete_shipment(id: int) -> dict[str, Any]:
-    db.delete_shipment(id)
+def delete_shipment(id: int,session : SessionDep) -> dict[str, Any]:
+    session.delete(
+        session.get(Shipment,id)
+    )
+    session.commit()
     return {"detail": f"Shipment with ID {id} has been deleted"}
 
 # @app.get("/shipments/{field}")
