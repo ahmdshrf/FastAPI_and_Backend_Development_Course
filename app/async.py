@@ -1,15 +1,18 @@
 import time
 from rich import print
 
-def endpoint (route):
+import asyncio
+
+async def endpoint (route:str) -> str:
     print(f">> handling {route}")
 
-    time.sleep(1)
+    await asyncio.sleep(1)
 
     print(f"<< response {route}")
 
+    return route
 
-def server():
+async def server():
 
     tests = (
         "GET /shipment$id=1",
@@ -20,12 +23,14 @@ def server():
     start = time.perf_counter()
 
     for route in tests:
-        endpoint(route)
+        result = await endpoint(route)
+        print("Result back :" , result)
 
     end = time.perf_counter()
 
     print(f"Time Taken : {end - start:.2f}s")
 
 
-
-server()
+asyncio.run(
+    server()
+)
