@@ -19,14 +19,14 @@ async def server():
         "PATCH /shipment$id=4",
         "GET /shipment$id=3",
     )
+    
+    start = time.perf_counter()
 
     requests = [
         asyncio.create_task(endpoint(route)) for route in tests
     ]
 
     done , pending = await asyncio.wait(requests)
-
-    start = time.perf_counter()
 
     for task in done:
         print("Result :", task.result())
