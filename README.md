@@ -3,10 +3,11 @@
 This repository contains code and examples from the O'Reilly course **Ultimate Guide to FastAPI and Backend Development**.
 
 - **Course Link:** [https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/](https://learning.oreilly.com/course/ultimate-guide-to/9781806101337/)
-- **Status:** Chapter 8 completed
+- **Status:** Chapter 9 completed
 - **Python:** 3.7+
 - **Framework:** FastAPI
 - **Database:** SQLite with SQLModel ORM
+- **Async:** Python asyncio with TaskGroup
 
 ## 📋 Project Overview
 
@@ -14,7 +15,7 @@ A hands-on learning project for FastAPI and backend development. This applicatio
 
 ## ✨ Features
 
-- ⚡ FastAPI app with async support
+- ⚡ FastAPI app with async/await support
 - 🗄️ SQLite database with SQLModel ORM
 - 📦 Complete CRUD operations for shipment management
 - ✅ Pydantic models for request/response validation
@@ -22,6 +23,8 @@ A hands-on learning project for FastAPI and backend development. This applicatio
 - 📚 Interactive Swagger UI and ReDoc documentation
 - 🔌 Scalar API reference support
 - 🔄 Auto-reload development server
+- ⏱️ Concurrent request handling with asyncio
+- 🚀 Advanced async patterns with TaskGroup
 
 ## 📋 Prerequisites
 
@@ -53,7 +56,7 @@ source venv/bin/activate
 
 ### 3. Install dependencies
 ```bash
-pip install fastapi uvicorn sqlmodel sqlalchemy
+pip install fastapi uvicorn sqlmodel sqlalchemy scalar-fastapi rich
 ```
 
 Or install from requirements file (if available):
@@ -108,8 +111,7 @@ All documentation formats display the same API schema and are automatically gene
 FastAPI_and_Backend_Development_Course/
 ├── app/
 │   ├── __init__.py               # App package initialization
-│   ├── main.py                   # FastAPI application and route handlers
-│   ├── schemas.py                # Pydantic/SQLModel models
+│   ├── main.py                   # FastAPI application and route handlers│   ├── async.py                  # Async programming examples with TaskGroup│   ├── schemas.py                # Pydantic/SQLModel models
 │   ├── database.py               # Legacy database utility class
 │   └── database/
 │       ├── __init__.py
@@ -120,6 +122,57 @@ FastAPI_and_Backend_Development_Course/
 ├── README.md                     # This file
 └── sqlite.db                     # SQLite database (generated on first run)
 ```
+
+## ⚡ Asynchronous Programming (Chapter 9)
+
+This project demonstrates advanced asynchronous programming patterns using Python's `asyncio` module.
+
+### async.py - Concurrent Request Handling
+
+The [async.py](app/async.py) module showcases how to handle multiple API requests concurrently using `asyncio.TaskGroup`:
+
+**Key Concepts:**
+- `async def` - Defines asynchronous functions
+- `await` - Waits for async operations without blocking
+- `asyncio.TaskGroup` - Groups multiple async tasks for concurrent execution
+- `asyncio.sleep()` - Non-blocking delay (simulates I/O operations)
+- `time.perf_counter()` - Measures performance and execution time
+
+**Example Usage:**
+```bash
+python app/async.py
+```
+
+**Output Example:**
+```
+>> handling GET /shipment?id=1
+>> handling PATCH /shipment?id=4
+>> handling GET /shipment?id=3
+<< response GET /shipment?id=1
+<< response PATCH /shipment?id=4
+<< response GET /shipment?id=3
+Time Taken : 1.05s
+```
+
+The `TaskGroup` allows all three requests to execute concurrently, reducing total execution time compared to sequential requests.
+
+### FastAPI Async Routes
+
+All endpoints in [main.py](app/main.py) are defined as async functions, enabling FastAPI to handle multiple requests concurrently:
+
+```python
+@app.get("/shipment")
+async def get_shipment(id: int, session: SessionDep) -> Shipment:
+    # FastAPI manages concurrent requests automatically
+    pass
+
+@app.post("/shipment")
+async def create_shipment(shipment: ShipmentCreate, session: SessionDep) -> dict:
+    # Multiple requests are handled concurrently by Uvicorn
+    pass
+```
+
+FastAPI automatically manages the event loop and concurrency for HTTP requests using Uvicorn (ASGI server).
 
 ## 📊 Data Models
 
@@ -278,6 +331,14 @@ CREATE TABLE IF NOT EXISTS shipment (
 ### Hot Reload
 Changes to code files automatically reload the server when using `fastapi dev` or `uvicorn` with `--reload` flag.
 
+### Running Async Examples
+To test the asynchronous programming examples from Chapter 9:
+```bash
+python app/async.py
+```
+
+This demonstrates concurrent task execution using Python's `asyncio` module and `TaskGroup` for managing multiple async operations.
+
 ### Testing
 Run the test file:
 ```bash
@@ -290,6 +351,7 @@ python test.py
 - **sqlmodel** - SQL ORM combining SQLAlchemy + Pydantic
 - **sqlalchemy** - Database toolkit
 - **scalar-fastapi** - Modern API documentation
+- **rich** - Beautiful terminal output formatting
 
 ## 📝 License
 
